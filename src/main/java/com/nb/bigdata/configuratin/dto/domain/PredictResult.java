@@ -11,9 +11,13 @@ public class PredictResult implements Serializable {
 
     private String modelId;
 
-    private String plateId;
+    private String positivePlateId;
 
-    private Integer type;
+    private String positivePlateName;
+
+    private String negativePlateId;
+
+    private String negativePlateName;
 
     private BigDecimal confidenceRate;
 
@@ -47,20 +51,36 @@ public class PredictResult implements Serializable {
         this.modelId = modelId == null ? null : modelId.trim();
     }
 
-    public String getPlateId() {
-        return plateId;
+    public String getPositivePlateId() {
+        return positivePlateId;
     }
 
-    public void setPlateId(String plateId) {
-        this.plateId = plateId == null ? null : plateId.trim();
+    public void setPositivePlateId(String positivePlateId) {
+        this.positivePlateId = positivePlateId == null ? null : positivePlateId.trim();
     }
 
-    public Integer getType() {
-        return type;
+    public String getPositivePlateName() {
+        return positivePlateName;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setPositivePlateName(String positivePlateName) {
+        this.positivePlateName = positivePlateName == null ? null : positivePlateName.trim();
+    }
+
+    public String getNegativePlateId() {
+        return negativePlateId;
+    }
+
+    public void setNegativePlateId(String negativePlateId) {
+        this.negativePlateId = negativePlateId == null ? null : negativePlateId.trim();
+    }
+
+    public String getNegativePlateName() {
+        return negativePlateName;
+    }
+
+    public void setNegativePlateName(String negativePlateName) {
+        this.negativePlateName = negativePlateName == null ? null : negativePlateName.trim();
     }
 
     public BigDecimal getConfidenceRate() {

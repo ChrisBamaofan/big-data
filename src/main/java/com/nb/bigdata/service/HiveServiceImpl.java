@@ -117,18 +117,27 @@ public class HiveServiceImpl implements HiveService{
     @Override
     public void saveSentence(List<PredictResult> predictResults) {
         StringBuilder sql = new StringBuilder();
-        sql.append("INSERT INTO `bigdata`.`predict_result`  PARTITION (country='CN')  (sentence_id,model_id,plate_id,type,confidence_rate,create_date) values");
+        sql.append("INSERT INTO `bigdata`.`predict_result`  PARTITION (country='CN')  (sentence_id,model_id,positive_plate_id,positive_plate_name,negative_plate_id,negative_plate_name,confidence_rate,create_date) values");
         for (PredictResult predictResult:predictResults){
             sql.append("(").append(predictResult.getSentenceId()).append(",");
             sql.append("'").append(predictResult.getModelId()).append("'").append(",");
-            sql.append(predictResult.getPlateId()).append(",");
-            sql.append(predictResult.getType()).append(",");
+            sql.append("'").append(replaceDot(predictResult.getPositivePlateId())).append("'").append(",");
+            sql.append("'").append(replaceDot(predictResult.getPositivePlateName())).append("'").append(",");
+            sql.append("'").append(replaceDot(predictResult.getNegativePlateId())).append("'").append(",");
+            sql.append("'").append(replaceDot(predictResult.getNegativePlateName())).append("'").append(",");
             sql.append(predictResult.getConfidenceRate()).append(",");
             sql.append("'").append(predictResult.getCreateDate().toLocalDate()).append("'").append("),");
         }
 
         sql.deleteCharAt(sql.lastIndexOf(","));
         hiveJdbcTemplate.execute(sql.toString());
+    }
+
+    private String replaceDot(String input){
+        if (StringUtils.isNotEmpty(input)){
+            return input.replaceAll(",","_");
+        }
+        return input;
     }
 }
 
