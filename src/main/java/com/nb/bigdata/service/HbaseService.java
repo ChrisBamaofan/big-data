@@ -1,15 +1,22 @@
 package com.nb.bigdata.service;
 
+import com.nb.bigdata.configuratin.bean.SentenceEntity;
 import com.nb.bigdata.configuratin.bean.SentencePredictResult;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.hadoop.hbase.client.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.nb.bigdata.configuratin.hbase.RawSentenceConfiguration.RAW_FAMILY_NAME;
+import static com.nb.bigdata.configuratin.hbase.RawSentenceConfiguration.RAW_SENTENCE_TABLENAME;
 import static com.nb.bigdata.configuratin.hbase.SentencePredictResultConfiguration.FAMILY_NAME;
 import static com.nb.bigdata.configuratin.hbase.SentencePredictResultConfiguration.SENTENCE_PREDICT_RESULT_TABLENAME;
 
@@ -47,8 +54,8 @@ public class HbaseService {
             table = connection.getTable(TableName.valueOf(SENTENCE_PREDICT_RESULT_TABLENAME));
 
             //3. 准备数据
-            String rowkey = sentencePredictResult.getSentence_id().toString();
-            Put put= new Put(Bytes.toBytes(rowkey));
+            String rowKey = sentencePredictResult.getSentence_id().toString();
+            Put put = new Put(Bytes.toBytes(rowKey));
             put.addColumn(Bytes.toBytes(FAMILY_NAME), Bytes.toBytes("sentence"), Bytes.toBytes(sentencePredictResult.getSentence()));
             put.addColumn(Bytes.toBytes(FAMILY_NAME), Bytes.toBytes("good"), Bytes.toBytes(sentencePredictResult.getPositive_labels()));
             put.addColumn(Bytes.toBytes(FAMILY_NAME), Bytes.toBytes("bad"), Bytes.toBytes(sentencePredictResult.getNegative_labels()));
@@ -57,6 +64,37 @@ public class HbaseService {
 
             // 4. 添加数据
             table.put(put);
+            table.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 未打标的数据，保存到hbase
+     *
+     * @param rawSentences
+     */
+    public void saveRawData(List<SentenceEntity> rawSentences) {
+
+        Table table = null;
+        try {
+            table = connection.getTable(TableName.valueOf(RAW_SENTENCE_TABLENAME));
+
+            //3. 准备数据
+            List<Put> puts = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(rawSentences)) {
+                for (SentenceEntity rawSentence : rawSentences) {
+                    String rowKey = rawSentence.getSentenceId().toString();
+                    Put put = new Put(Bytes.toBytes(rowKey));
+                    put.addColumn(Bytes.toBytes(RAW_FAMILY_NAME), Bytes.toBytes("sentence"), Bytes.toBytes(rawSentence.getContent()));
+                    put.addColumn(Bytes.toBytes(RAW_FAMILY_NAME), Bytes.toBytes("create_at"), Bytes.toBytes(rawSentence.getSentenceDateTime()));
+                    puts.add(put);
+                }
+            }
+            // 4. 添加数据
+            table.put(puts);
             table.close();
         } catch (IOException e) {
             e.printStackTrace();

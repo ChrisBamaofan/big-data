@@ -1,12 +1,15 @@
 package com.nb.bigdata.controller;
 
 import com.nb.bigdata.configuratin.bean.HbaseTableParam;
+import com.nb.bigdata.configuratin.bean.RawSentences;
+import com.nb.bigdata.configuratin.bean.SentenceEntity;
 import com.nb.bigdata.configuratin.bean.SentencePredictResult;
 import com.nb.bigdata.service.HbaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author zhaohaojie
@@ -31,11 +34,12 @@ public class HbaseController {
     @PostMapping("/saveSentence")
     public void saveSentence(@RequestBody SentencePredictResult sentencePredictResult){
         hbaseService.saveSentence(sentencePredictResult);
-
     }
+
     @PostMapping("/get")
     public String get(@RequestBody HbaseTableParam table) throws IOException {
         return hbaseService.getData(table.getTableName(),table.getRowKey(),table.getColumnFamily(),table.getColumn());
     }
+
 }
 

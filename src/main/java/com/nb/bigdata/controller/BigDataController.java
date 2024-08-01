@@ -1,8 +1,6 @@
 package com.nb.bigdata.controller;
 
-import com.nb.bigdata.configuratin.bean.BigDataSentencePredictResult;
-import com.nb.bigdata.configuratin.bean.HbaseTableParam;
-import com.nb.bigdata.configuratin.bean.SentencePredictResult;
+import com.nb.bigdata.configuratin.bean.*;
 import com.nb.bigdata.service.HbaseService;
 import com.nb.bigdata.service.HiveService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -39,5 +38,10 @@ public class BigDataController {
         return 1;
     }
 
+    @PostMapping("/saveRawSentence")
+    public Integer saveRawSentence(@RequestBody List<SentenceEntity> rawSentences){
+        hbaseService.saveRawData(rawSentences);
+        return 1;
+    }
 }
 
