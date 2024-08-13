@@ -11,5 +11,7 @@ public class SentenceEntity {
     Long sentenceId;
     String content;
     Long sentenceDateTime;
+    String md5;
+    String rowKey;
 }
 

@@ -13,15 +13,14 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.PostConstruct;
 
 /**
- * rowkey设计不规范，表名和列簇名太长
+ *
  */
 @Configuration
 @Slf4j
-@Deprecated
-public class RawSentenceConfiguration {
-    public static final String RAW_SENTENCE_TABLENAME = "raw_sentence";
+public class RawSentConfig {
+    public static final String RAW_SENTENCE_TABLENAME = "raw";
 
-    public static final String RAW_FAMILY_NAME = "raw_sentence_info";
+    public static final String RAW_FAMILY_NAME = "cf";
 
     @Autowired
     private Connection connection;
@@ -39,8 +38,11 @@ public class RawSentenceConfiguration {
             //2.2 如果表不存在就重新创建一个表
             HTableDescriptor hTableDescriptor = new HTableDescriptor(tableName);
             hTableDescriptor.addFamily(new HColumnDescriptor(RAW_FAMILY_NAME));
-
-            admin.createTable(hTableDescriptor);
+            byte[][] splits = new byte[][]{
+                    Bytes.toBytes("56"),
+                    Bytes.toBytes("AB")
+            };
+            admin.createTable(hTableDescriptor,splits);
             log.info("创建hbase表：{}",tableName);
         }
     }

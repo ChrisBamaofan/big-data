@@ -2,6 +2,7 @@ package com.nb.bigdata.service;
 
 import com.nb.bigdata.configuratin.bean.SentenceEntity;
 import com.nb.bigdata.configuratin.bean.SentencePredictResult;
+import com.nb.bigdata.configuratin.hbase.RawSentConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.hadoop.hbase.client.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,16 +81,16 @@ public class HbaseService {
 
         Table table = null;
         try {
-            table = connection.getTable(TableName.valueOf(RAW_SENTENCE_TABLENAME));
+            table = connection.getTable(TableName.valueOf(RawSentConfig.RAW_SENTENCE_TABLENAME));
 
             //3. 准备数据
             List<Put> puts = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(rawSentences)) {
                 for (SentenceEntity rawSentence : rawSentences) {
-                    String rowKey = rawSentence.getSentenceId().toString();
+                    String rowKey = rawSentence.getRowKey();
                     Put put = new Put(Bytes.toBytes(rowKey));
-                    put.addColumn(Bytes.toBytes(RAW_FAMILY_NAME), Bytes.toBytes("sentence"), Bytes.toBytes(rawSentence.getContent()));
-                    put.addColumn(Bytes.toBytes(RAW_FAMILY_NAME), Bytes.toBytes("create_at"), Bytes.toBytes(rawSentence.getSentenceDateTime()));
+                    put.addColumn(Bytes.toBytes(RawSentConfig.RAW_FAMILY_NAME), Bytes.toBytes("ctx"), Bytes.toBytes(rawSentence.getContent()));
+                    put.addColumn(Bytes.toBytes(RawSentConfig.RAW_FAMILY_NAME), Bytes.toBytes("tm"), Bytes.toBytes(rawSentence.getSentenceDateTime()));
                     puts.add(put);
                 }
             }
